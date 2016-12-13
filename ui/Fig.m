@@ -6,20 +6,6 @@ classdef Fig < handle% matlab.ui.Figure is sealed thus cannot be extend
     % * figure(F.handle); % set to current figure:
     % * close(F.handle) % close it
     %
-    %   Examples
-    %   --------
-    %
-    %       %
-    %        Fig('peppers.png', 'cameraman.tif', 'football.jpg');
-    %
-    %       %
-    %        Peppers = imread('peppers.png');
-    %        Cameraman = imread('cameraman.tif');
-    %        Football = imread('football.jpg');
-    %        Fig(Peppers, Cameraman, Football),
-    %
-    %        Fig(Cameraman, Football).setTitle('My Figure').fullscreen,
-    %
     %        MyFigure = Fig(Cameraman, Peppers),
     %        MyFigure.setAxesTitle({'A Cameraman', 'Some Peppers'});
     %        MyFigure.save(); 
@@ -45,6 +31,24 @@ classdef Fig < handle% matlab.ui.Figure is sealed thus cannot be extend
         layout
     end
     
+    methods (Static)
+        function demo
+            Fig('peppers.png', 'cameraman.tif', 'football.jpg'),
+            %Fig(eachfile('*.jpg'));
+            title('INPUTS can be image filenames');
+            pause;
+            Peppers = imread('peppers.png');
+            Cameraman = imread('cameraman.tif');
+            Football = imread('football.jpg');
+            Fig(Peppers, Cameraman, Football),
+            
+            Fig(Cameraman, Football).setTitle('My Figure').fullscreen,
+            pause;close all;
+        end
+    end
+    
+% name value pair --> field and value?    
+    
 %     properties (GetAccess = private, SetAccess = private)
 %         % data % private data storing contents to show
 %     end
@@ -54,15 +58,21 @@ classdef Fig < handle% matlab.ui.Figure is sealed thus cannot be extend
             % Figure(varargin) Construct a figure.
             
             %f.data = args;
-            if ~isempty(get(groot,'CurrentFigure')) && ishold 
-            % Note ishold will new a figure if there is no figure
-                f.handle = gcf;
+            if nargin == 1 && isfield(varargin{1}, 'name')
+                f.data = varargin{1};
             else
-                f.handle = figure();
+                
+                if ~isempty(get(groot,'CurrentFigure')) && ishold
+                    % Note ishold will new a figure if there is no figure
+                    f.handle = gcf;
+                else
+                    f.handle = figure();
+                end
+                
+                varargin2args;
+                f.data =args;
+                
             end
-            
-            varargin2args;
-            f.data =args;
         end
         
         function disp(f)
@@ -73,14 +83,13 @@ classdef Fig < handle% matlab.ui.Figure is sealed thus cannot be extend
             set(0, 'CurrentFigure', f.handle);
             
             narg = numel(args);
-            if mat
+            if ~isempty(mat)
                 [r, c] = size(mat); vec = mat'; vec = vec(:); % convert to a vector
             else
                 r = floor(sqrt(narg)); c = ceil(narg/r);
             end
-            
             for n = 1:narg
-                if mat
+                if ~isempty(mat)
                     pStart = find( vec==n, 1, 'first'); 
                     pEnd =  find( vec==n, 1, 'last');
                     subplot(r, c, [pStart pEnd]); 

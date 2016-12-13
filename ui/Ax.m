@@ -30,9 +30,11 @@ classdef Ax < handle
     
     methods (Access = public)
         function a = Ax(varargin)
-            varargin2args;
-            a.data =args;
-            %default layout
+            if nargin == 1 && isfield(varargin{1}, 'name')  
+                a.data =varargin{1}; return;
+            else
+                varargin2args; a.data =args;
+            end
         end
         
         function a = setLayout(a, mat)
@@ -63,6 +65,9 @@ classdef Ax < handle
                 nCol = zeros(1,nBlock);
                 nDim = zeros(1,nBlock);
                 for n = 1:nBlock
+%                     if ischar(a.data(n).value)
+%                         a.data(n).value = imread(a.data(n).value);
+%                     end
                     [nRow(n), nCol(n), nDim(n)] = size(a.data(n).value);
                 end
                 blockSize = [max(nRow(:)), max(nCol(:))];
