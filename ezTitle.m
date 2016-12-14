@@ -9,6 +9,8 @@ if nargin == 0
     pause
     cfg.Color = 'b';
     ezTitle(cfg, 'Add', 'some', 'configuration');
+    pause
+    ezTitle('change', [], 'title');
     return;
 end
 

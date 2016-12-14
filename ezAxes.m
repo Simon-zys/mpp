@@ -14,7 +14,7 @@ varargin2args
 
 cfg = varargin{1};
 if isstruct(cfg)
-    args = args(2:end); 
+    args = args(2:end);
 end
 
 for n = 1:numel(args)

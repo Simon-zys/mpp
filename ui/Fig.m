@@ -55,23 +55,21 @@ classdef Fig < handle% matlab.ui.Figure is sealed thus cannot be extend
 
     methods (Access = public)
         function f = Fig(varargin)
-            % Figure(varargin) Construct a figure.
+            % Fig(varargin) Construct a figure.
             
             %f.data = args;
-            if nargin == 1 && isfield(varargin{1}, 'name')
-                f.data = varargin{1};
+            if ~isempty(get(groot,'CurrentFigure')) && ishold
+                % Note ishold will new a figure if there is no figure
+                f.handle = gcf;
             else
-                
-                if ~isempty(get(groot,'CurrentFigure')) && ishold
-                    % Note ishold will new a figure if there is no figure
-                    f.handle = gcf;
-                else
-                    f.handle = figure();
-                end
-                
+                f.handle = figure();
+            end
+            
+            if nargin == 1 && isfield(varargin{1}, 'name')
+                f.data = varargin{1}; % Fig(args)
+            else
                 varargin2args;
                 f.data =args;
-                
             end
         end
         
