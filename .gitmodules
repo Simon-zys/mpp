@@ -1,0 +1,3 @@
+[submodule "mpp.wiki"]
+	path = mpp.wiki
+	url = https://github.com/baidut/mpp.wiki.git
