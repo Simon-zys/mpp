@@ -5,27 +5,22 @@ function varargout = ezInput(varargin)
 % [opt1, opt2, opt3] = ezInput(varargin, default1, default2, default3);
 % input = ezInput(varargin, 'param1', value1, 'parm2', value2);
 %
-%EXAMPLE
-%
-% inputs = {1, 'param1', 1, 'param2', 2, 'param3', 3};
-% [opt1, opt2, opt3, input, varargin] = ezInput(inputs, 100, 200, 300, 'param1', 100, 'param2', 200, 'param4', 400)
+%SEE ALSO ezFig ezAxes ezDump
 %
 %COPYRIGHT Zhenqiang Ying <yingzhenqiang-at-gmail-dot-com>
 
-if nargin == 0
-    %help ezInput ezHelp ezInput ezDump ezFig
-    % seeAlso
-    %inputs = {1,'2',3, 'param1', 1, 'param2', 2, 'param3', 3};
-    inputs = {1, 'param1', 1, 'param2', 2, 'param3', 3};
-    [opt1, opt2, opt3, input, varargin] = ezInput(inputs, 100, 200, 300, 'param1', 100, 'param2', 200, 'param4', 400)
-    %[opt1, opt2, opt3, input] = ezInput(inputs, 100, 200, 300, 'param1', 100, 'param2', 200, 'param4', 400)
-    %[opt1, opt2, opt3] = ezInput({1}, 100, 200, 300)
-    %input = ezInput({'param1', 1}, 'param1', 100, 'param2', 200, 'param3', 300)
-    return;
-end
 
-% [opt, param] = argparts(0, 1,'2',3, '4', 5, 'param1', 1, 'param2', 2, 'param3', 3)
-% return;
+if nargin == 0
+    showhelp
+    inputs = {1,'2',3, 'param1', 1, 'param2', 2, 'param3', 3};
+    [opt1, opt2, opt3, input, varargin] = ezInput(inputs, 100, 200, 300, 'param1', 100, 'param2', 200, 'param4', 400)
+    pause;
+    [opt1, opt2, opt3] = ezInput({1}, 100, 200, 300)
+    pause;
+    input = ezInput({'param1', 1}, 'param1', 100, 'param2', 200, 'param3', 300)
+    return
+    % [opt, param] = argparts(0, 1,'2',3, '4', 5, 'param1', 1, 'param2', 2, 'param3', 3)
+end
 
 cfg.CaseSensitive = true;
 cfg.KeepUnmatched = true;
