@@ -27,17 +27,39 @@ end
 % [opt, param] = argparts(0, 1,'2',3, '4', 5, 'param1', 1, 'param2', 2, 'param3', 3)
 % return;
 
+cfg.CaseSensitive = true;
+cfg.KeepUnmatched = true;
+cfg.Assert = [];
+
 if isstruct(varargin{1})
-    cfg = varargin{1}; varargin = varargin(2:end);
-else
-    cfg = [];
+	cfg = loaddefault(varargin{1}, cfg, true); % time-consuming
+    varargin = varargin(2:end);
 end
 
 [defaultOpt, defaultParam] = argparts(varargin{2:end});                     % load default param-value
 [varargout{1:numel(defaultOpt)}] = defaultOpt{:};                           % load default optional
 [opt, param] = argparts(varargin{1}{:});                                    % parse function inputs % vararg = varargin{1};
 [varargout{1:numel(opt)}] = opt{:};                                         % overwrite optional
-[varargout{numel(defaultOpt)+(1:2)}] = loaddefault(param, defaultParam);    % overwrite param-value
+[varargout{numel(defaultOpt)+(1:2)}] = loaddefault(param, defaultParam, cfg.CaseSensitive); % overwrite param-value
+
+if ~cfg.KeepUnmatched
+    if ~isempty(varargout{end})
+        disp(varargout{end});
+        error('Unkown Parameters');
+    end
+end
+
+% validateAttributes
+if ~isempty(cfg.Assert) 
+    for n = 1:numel(opt)
+        cfg.Assert{n}(varargout{n});
+    end
+    paramList = varargin((3+numel(defaultOpt)):2:end);
+    for n = 1:numel(paramList)
+        cfg.Assert{numel(defaultOpt)+n}(paramList{n});
+    end
+end
+
 end
 
 function [opt, param] = argparts(varargin) % split opt and param-value
@@ -63,34 +85,42 @@ end
 function [param, unknown] = loaddefault(inputParam, defaultParam, caseSensitive)
 % param - load defaultParam value when it is not specified in param
 % unknown - param that not in the set of defaultParam
-if nargin < 3
-    caseSensitive = true;
-end
 
-defaultFields = fieldnames(defaultParam);
 inputFields = fieldnames(inputParam);
 
-if ~caseSensitive
+unknown = struct;
+if caseSensitive % `ismember` is time-consuming, avoid it
+    param = defaultParam;
+    for n = 1:numel(inputFields)
+        f = inputFields{n};
+        if isfield(defaultParam, f)
+            param.(f) = inputParam.(f);
+        else
+            unknown.(f) = inputParam.(f);
+        end
+    end
+else
+    defaultFields = fieldnames(defaultParam);
+    
     defaultFields = lower(defaultFields);
     inputFields = lower(inputFields);
-end
-
-% note that we overwrite the specified param instead of loading default value to inputParam,
-% since the fieldname in inputParam is not reliable if case-insensitive
-isSpecified = ismember(defaultFields, inputFields);
-
-% defaultParam <-- inputParam
-param = loadfiled(defaultParam, inputParam, defaultFields(isSpecified));
-
-% note we do not append unknown parameters to param since when
-% we use the parameter, we assert that it has default value if not
-% specified
-if nargout > 1
+    isSpecified = ismember(defaultFields, inputFields);
+    
+    % note that we overwrite the specified param instead of loading default value to inputParam,
+    % since the fieldname in inputParam is not reliable if case-insensitive
+    % defaultParam <-- inputParam
+    param = loadfiled(defaultParam, inputParam, defaultFields(isSpecified));
+    
+    % note we do not append unknown parameters to param since when
+    % we use the parameter, we assert that it has default value if not
+    % specified
     isKnown = ismember(inputFields, defaultFields);
     unknown = loadfiled(struct, inputParam, inputFields(~isKnown));
-    % convert struct to cell
-    unknown = convertToCell(unknown);
 end
+
+% convert struct to cell
+unknown = convertToCell(unknown);
+
 end
 
 function s1 = loadfiled(s1, s2, fields)
