@@ -3,7 +3,7 @@ function h = ezFig(varargin)
 %TODO: adaptive layout according to image size
 
 if nargin == 0
-%% EXAMPLE
+    showhelp
 	ezFig('peppers.png', 'cameraman.tif', 'football.jpg');
     pause;
     ezFig('peppers.png', ezAxes('cameraman.tif', 'football.jpg'));
@@ -11,7 +11,7 @@ if nargin == 0
     cfg.layout = [1 1 0
                   2 2 3
                   4 4 4];
-    ezAxes(cfg, 'peppers.png', 'cameraman.tif', 'pout.tif', 'football.jpg');
+    figure, ezAxes(cfg, 'peppers.png', 'cameraman.tif', 'pout.tif', 'football.jpg');
     return;
 end
 

@@ -55,7 +55,7 @@ else
     nfixarg = 0;
 end
 
-mkdir('%dump');
+% mkdir('%dump');
 
 cfg = loaddefault(cfg, defaultCfg);
 
@@ -99,7 +99,7 @@ for n = 1:numel(todump)
                     case '.eps'
                         print(file, '-depsc'); % print(arg, file, '-depsc');
                     otherwise
-                        error('unsupport ext');
+                        error('unsupport ext: %s', t_ext);
                 end
                 continue; % dump next
             otherwise
